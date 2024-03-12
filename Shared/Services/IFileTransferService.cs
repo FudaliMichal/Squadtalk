@@ -29,6 +29,8 @@ public interface IFileTransferService
     
     Task InitializeAsync();
 
+    Task UploadFileMichal(string fName);
+    
     Task UploadFileAsync(TextChannel channel);
 
     Task CancelUploadAsync();

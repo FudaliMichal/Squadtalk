@@ -26,6 +26,7 @@ public sealed class FileTransferService : IFileTransferService, IAsyncDisposable
     public TextChannel? UploadChannel { get; private set; }
     public List<FileModel> UploadQueue { get; } = [];
 
+    
     public FileTransferService(IJSRuntime jsRuntime, ILogger<FileTransferService> logger, ToastService toastService)
     {
         _jsRuntime = jsRuntime;
@@ -42,6 +43,13 @@ public sealed class FileTransferService : IFileTransferService, IAsyncDisposable
         await _jsModule.InvokeVoidAsync("initialize", _dotNetObject, "127.0.0.1:1235/Upload");
     }
 
+
+    public Task UploadFileMichal(string fName)
+    {
+        return _jsModule!.InvokeVoidAsync("oro", fName).AsTask();
+    }
+    
+    
     public Task UploadFileAsync(TextChannel channel)
     {
         if (SelectedFile is null)

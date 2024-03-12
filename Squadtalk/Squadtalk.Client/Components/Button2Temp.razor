@@ -1,0 +1,79 @@
+@using RestSharp
+<Modal @ref="modal" Title="@($"Files in folder: {FolderTitle}")">
+    <BodyTemplate>
+
+        @foreach (var name in fileNames)
+        {
+            <div>
+                @name
+            </div>
+        }        
+        
+    </BodyTemplate>
+    
+    <FooterTemplate>
+        <InputFile OnChange="LoadFiles" multiple />
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+    </FooterTemplate>
+</Modal>
+
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Files</Button>
+
+@inject IFileTransferService FileTransferService
+@inject RestClient RestClient
+
+@code {
+    private Modal modal = default!;
+    List<string> fileNames = [];
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        using HttpClient httpClient = new HttpClient();
+        
+        int maxAllowedFiles = 5;
+        long maxFileSize = 1024 * 1024 * 26;
+        int filesProcessed = 0;
+
+        
+        foreach (var multipleFile in e.GetMultipleFiles())
+        {
+            if (filesProcessed > maxAllowedFiles)
+            {   
+                Console.WriteLine("!!!2 MANY FILES!!!");
+                return;
+            }
+            
+            if (multipleFile.Size > maxFileSize)
+            {
+                Console.WriteLine("!!!FILE 2 BIG!!!");    
+            } 
+            
+            fileNames.Add(multipleFile.Name);
+            
+            var url = "http://localhost:1235/api/folder/posted";
+            using var requestContent = new MultipartFormDataContent();
+            await using var fileStream = multipleFile.OpenReadStream();
+            
+            requestContent.Add(new StreamContent(fileStream), "files", multipleFile.Name);
+            await httpClient.PostAsync(url, requestContent);
+            filesProcessed++;
+        }
+    }
+    
+    
+    
+    
+    
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+    
+    [Parameter]
+    public string FolderTitle { get; set; }
+}

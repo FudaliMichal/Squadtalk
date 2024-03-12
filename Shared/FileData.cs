@@ -10,4 +10,5 @@ public static class FileData
     public const string FileSize = "file_size";
     public const string PreviewUrl = "preview_url";
     public const string Url = "url";
+    public const string FolderName = "folder_name";
 }

@@ -137,6 +137,12 @@ async function uploadFile(file, channelId) {
     currentUpload.start();
 }
 
+export function oro(foldername) {
+    console.log(foldername);
+}
+
+
+
 async function createUploadOptions(file, channelId) {
     const uploadOptions = {
         endpoint: "Upload",
